@@ -21,9 +21,12 @@ services:
       - ./nginx.default.conf:/etc/nginx/conf.d/default.conf
       - ./static:/static
       - ./media:/media # media가 있으면
-    restart: unless-stopped
+      - ./cert/certbot/conf:/etc/letsencrypt
+      - ./cert/certbot/www:/var/www/certbot
+    restart: always
     ports:
       - "80:80"
+      - 443:443
     depends_on:
       - web
     networks:
@@ -31,3 +34,11 @@ services:
 
 networks:
   server:
+
+  # 이 밑은 전부 다
+  certbot:
+    image: certbot/certbot
+    restart: unless-stopped
+    volumes:
+      - ./cert/certbot/conf:/etc/letsencrypt 
+      - ./cert/certbot/www:/var/www/certbot
